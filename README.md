@@ -6,8 +6,7 @@ LA4SR (pronounced "laser") is a framework for implementing state-of-the-art lang
 
 ## 🚀 Key Features
 
-- **High Performance**: Up to 16,580x faster than BLAST with ~3x higher recall rate
-- **Multiple Architecture Support**: Compatible with various model architectures including:
+- **Multiple AI model Architecture Support**: Compatible with various open-source architectures including:
   - Transformer-based: GPT variants, DistilRoBERTa, BLOOM, Mistral
   - State-space models: Mamba
 - **Flexible Processing Options**: 
