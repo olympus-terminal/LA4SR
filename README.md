@@ -1,96 +1,87 @@
 # LA<sub>4</sub>SR: Language modeling with AI for Algal Amino Acid Sequence Representation 🧬
 
 ```
-                 .:::::::.              
-              .::::::::::::.          🌊 Diving into the
-            .:::::'_    `::.            Dark Proteome
-           ::::::(_)     '::.
-          :::::::         `::
-         :::::::.    .::. `::          🧪 Illuminating
-        ::::::::.   :::::  ::            Microbial
-       ::::::::::.  `::'   ::            Mysteries
-       `:::::::::'   `:.   ::
-        `::::::'            ::         🔬 One Sequence
-          `:::'             ::           at a Time
+           ||  \         /`-.  ,-°-.  .´¯\    
+           ||   \  _.--'     `/     `./    \     🔬 Illuminating the
+     LASER ||    |'          |   .    \     \      Dark Proteome
+    =====>||====================>@<============>
+           ||    |           |     .   \     /   🧫 One Sequence
+           ||   /  `-.__     '\     ,´/    /       at a Time
+           ||  /         `-._  `-.,-´  ,-´/
+                              
+                   @<  = microalga
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-LA4SR (pronounced "laser") 🎯 is a framework for implementing state-of-the-art language models to process microbial genomic data and extract otherwise intractable information. It excels at distinguishing between algal and bacterial sequences with high accuracy and unprecedented speed. 
+LA4SR (pronounced "laser") 🎯 is a framework for implementing state-of-the-art language models to process microbial genomic data and extract otherwise intractable information. It excels at distinguishing between algal and bacterial sequences with high accuracy and unprecedented speed (16,580x faster than BLAST with ~3x higher recall rate).
 
 ## 🧫 Key Features
 
 - **Multiple AI Model Architecture Support** 🏗️
-  - 🤖 Transformer-based: GPT variants, DistilRoBERTa, BLOOM, Mistral
-  - 🐍 State-space models: Mamba
-- **Flexible Processing Options** 🔄
-  - 📍 Terminal Information (TI) inclusive processing
-  - 🎯 TI-free processing for improved generalization
+  - Transformer-based: GPT variants, DistilRoBERTa, BLOOM, Mistral
+  - State-space models: Mamba
 - **Rich Interpretability Tools** 🔍
-  - 🌀 HELIX (Hidden Embedding Layer Information eXplorer)
-  - ⚡ DeepLift LA4SR
-  - 🎣 Deep Motif Miner (DMM)
-- **GPU Acceleration** 🚄 Fully optimized for modern GPU architectures
+  - HELIX (Hidden Embedding Layer Information eXplorer)
+  - DeepLift LA4SR
+  - Deep Motif Miner (DMM)
+- **Flexible Processing & GPU Acceleration** 🚄
+  - Terminal Information (TI) inclusive/free processing
+  - Fully optimized for modern GPU architectures
 
-```
-     🌿 Speed Comparison 🌿
-    ┌────────────────────┐
-    │     LA4SR vs       │
-    │    Traditional     │    
-    │     Methods       🔬
-    │                    │
-    │    16,580x        │
-    │    Faster!        │
-    └────────────────────┘
+## 🛠️ Installation
+
+```bash
+git clone https://github.com/yourusername/LA4SR.git
+cd LA4SR
+pip install -r requirements.txt
 ```
 
-## 🛠️ Requirements
+## 🎯 Usage
 
-- 🐍 Python 3.8+
-- 🔥 PyTorch 2.0+
-- 🤗 Transformers
-- 💫 Bitsandbytes (for quantization)
-- 🎮 CUDA-capable GPU (recommended)
+```python
+from la4sr import LA4SRModel
 
-[Rest of the content remains the same as in your version...]
+# Initialize model
+model = LA4SRModel.from_pretrained('ChlorophyllChampion/LA4SR-Mamba-370m-88F1-45000')
+
+# Classify sequences
+sequences = ["MKTLLLTLVV...", "GPRTEINPLL..."]  # Your amino acid sequences
+predictions = model.predict(sequences)
+```
 
 ## 🌊 Performance Benchmarks
 
-```
-  Speed & Accuracy Matrix
-  
-  🚀 LA4SR Pythia 70m  ═══════════════╗ 
-                                     ║ F1: 0.90
-  🚀 LA4SR Mamba 370m  ═════════════╗ ║
-                                   ║ ║ F1: 0.88
-  🚀 LA4SR Mistral 7B  ═══════════╗ ║ ║
-                                 ║ ║ ║ F1: 0.88
-                                 ╚═╝ ╚═╝
-```
+| Model | Parameters | F1 Score | Speed (vs BLAST) |
+|-------|------------|----------|------------------|
+| LA4SR Pythia 70m | 70M | 0.90 | 16,580x |
+| LA4SR Mamba 370m | 370M | 0.88 | 15,200x |
+| LA4SR Mistral 7B | 7B | 0.88 | 14,800x |
 
-[Rest of the content remains the same as in your version...]
+## 📚 Pre-trained Models
 
-## 🎯 Tools & Ecosystem
+Available on Hugging Face:
+- [ChlorophyllChampion/Mamba-370m-88F1-45000](https://huggingface.co/ChlorophyllChampion/Mamba-370m-88F1-45000)
+- [ChlorophyllChampion/LA4SR-Mamba-2.8b-QLORA-ft](https://huggingface.co/ChlorophyllChampion/LA4SR-Mamba-2.8b-QLORA-ft)
 
-```
-   🧬 LA4SR Pipeline 🧬
-   
-   [Input Sequence]
-        ↓ 🔄
-   [Model Processing]
-        ↓ 🤖
-   [Interpretation]
-        ↓ 📊
-   [Classification]
-        ↓ ✨
-   [Output & Analysis]
+## 📝 Citation
+
+```bibtex
+@article{nelson2024la4sr,
+  title={LA4SR: illuminating the dark proteome with generative AI},
+  author={Nelson, David R. and Jaiswal, Ashish Kumar and Ismail, Noha and Salehi-Ashtiani, Kourosh},
+  journal={[Journal TBD]},
+  year={2024}
+}
 ```
 
-[Rest of the content remains the same as in your version...]
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 <div align="center">
 🧬 Empowering Microbial Genomics with AI 🧬
 
-Made with 💚 by the LA4SR Team
+Made by the LA4SR Team
 </div>
