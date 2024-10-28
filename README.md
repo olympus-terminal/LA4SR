@@ -3,13 +3,12 @@
 ```
            ||  \         /`-.  ,-°-.  .´¯\    
            ||   \  _.--'     `/     `./    \     🔬 Illuminating the
-     LASER ||    |'          |   .    \     \      Dark Proteome
+           ||    |'          |   .    \     \      Dark Proteome
     =====>||====================>@<============>
            ||    |           |     .   \     /   🧫 One Sequence
            ||   /  `-.__     '\     ,´/    /       at a Time
            ||  /         `-._  `-.,-´  ,-´/
                               
-                   @<  = microalga
 ```
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
