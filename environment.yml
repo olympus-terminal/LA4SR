@@ -57,7 +57,7 @@ dependencies:
       - torchvision==0.18.1
       - calflops==0.3.2
       - captum==0.7.0
-      #- causal-conv1d==1.2.0.post2
+      - causal-conv1d==1.2.0.post2
       - tqdm==4.66.2
       - transformers==4.47.1
       - absl-py==2.1.0
