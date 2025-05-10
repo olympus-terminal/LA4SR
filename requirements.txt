@@ -1,3 +1,9 @@
+packaging==24.0
+torch==2.3.1
+torchaudio==2.3.1
+torchvision==0.18.1
+tqdm==4.66.2
+transformers==4.47.1
 absl-py==2.1.0
 accelerate==0.28.0
 aiofiles==23.2.1
@@ -91,7 +97,7 @@ nvidia-nccl-cu12==2.20.5
 nvidia-nvjitlink-cu12==12.4.99
 nvidia-nvtx-cu12==12.1.105
 openai==1.16.2
-packaging==24.0
+
 pandas==2.2.2
 ParmEd==4.3.0
 peft==0.10.0
@@ -144,11 +150,7 @@ tensorboard-data-server==0.7.2
 threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_1714400101435/work
 tiktoken==0.6.0
 tokenizers==0.21.0
-torch==2.3.1
-torchaudio==2.3.1
-torchvision==0.18.1
-tqdm==4.66.2
-transformers==4.47.1
+
 triton==2.2.0
 trl==0.8.1
 typing_extensions==4.12.2
