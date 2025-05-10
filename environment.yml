@@ -5,6 +5,7 @@ channels:
   - defaults
 dependencies:
   - _libgcc_mutex=0.1
+  - packaging    
   - _openmp_mutex=4.5
   - bzip2=1.0.8
   - ca-certificates=2025.4.26
