@@ -52,6 +52,14 @@ dependencies:
   - xz=5.2.6
   - zlib=1.2.13
   - pip:
+      - torch==2.3.1
+      - torchaudio==2.3.1
+      - torchvision==0.18.1
+      - calflops==0.3.2
+      - captum==0.7.0
+      - causal-conv1d==1.2.0.post2
+      - tqdm==4.66.2
+      - transformers==4.47.1
       - absl-py==2.1.0
       - accelerate==0.28.0
       - aiofiles==23.2.1
@@ -67,9 +75,7 @@ dependencies:
       - backoff==2.2.1
       - biopython==1.78
       - bitsandbytes==0.43.1
-      - calflops==0.3.2
-      - captum==0.7.0
-      - causal-conv1d==1.2.0.post2
+
       - certifi==2024.2.2
       - charset-normalizer==3.3.2
       - click==8.1.7
@@ -190,11 +196,7 @@ dependencies:
       - tensorboard-data-server==0.7.2
       - tiktoken==0.6.0
       - tokenizers==0.21.0
-      - torch==2.3.1
-      - torchaudio==2.3.1
-      - torchvision==0.18.1
-      - tqdm==4.66.2
-      - transformers==4.47.1
+
       - triton==2.2.0
       - trl==0.8.1
       - typing-extensions==4.12.2
