@@ -1,15 +1,8 @@
 # LA<sub>4</sub>SR: Language modeling with AI for Algal Amino Acid Sequence Representation 🧬
 
-```
-           ||  \         /`-.  ,-°-.  .´¯\    
-           ||   \  _.--'     `/     `./    \     🔬 Illuminating the
-           ||    |'          |   .    \     \      Dark Proteome
-    =====>||====================>@<============>
-           ||    |           |     .   \     /   🧫 One Sequence
-           ||   /  `-.__     '\     ,´/    /       at a Time
-           ||  /         `-._  `-.,-´  ,-´/
-                              
-```
+🔬 Illuminating the
+             Dark Proteome
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
