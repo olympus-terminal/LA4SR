@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-LLM Classification Metrics Generator for Two-File Analysis
+Advanced LLM Classification Metrics Generator
 
-This script analyzes the LLM classification results from two separate files:
-- One containing algal sequences (true algal samples)
-- One containing bacterial sequences (true bacterial samples)
-
-It extracts the predicted tags and calculates comprehensive metrics.
+This script analyzes the output from LLM classification tasks,
+specifically for algal vs bacterial sequence classification.
+It handles various tag formats and provides detailed metrics.
 """
 
 import re
@@ -15,82 +13,69 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score, confusion_matrix
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, roc_curve, auc
 
-def parse_files(algal_file, bacterial_file):
+def parse_file(file_path):
     """
-    Parse the algal and bacterial files to extract true and predicted labels
+    Parse the LLM inference results file and extract true and predicted labels
     
     Arguments:
-        algal_file (str): Path to the file containing algal sequences
-        bacterial_file (str): Path to the file containing bacterial sequences
+        file_path (str): Path to the file containing inference results
         
     Returns:
         tuple: Lists of true labels and predicted labels
     """
+    with open(file_path, 'r') as f:
+        content = f.read()
+    
+    # Split content into sections
+    sections = re.split(r'==>\s+(.+?)\s+<==', content)
+    
+    # Initialize result lists
     true_labels = []
     predicted_labels = []
     sequence_ids = []
     
-    # Process algal file (all true labels are 'algal')
-    with open(algal_file, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            
-            # Skip header or non-data lines
-            if line.startswith('==>') or line.startswith('(') or not re.search(r'-|_', line):
-                continue
-                
-            # Extract sequence ID
-            seq_id_match = re.match(r'^([^\s]+)', line)
-            if seq_id_match:
-                seq_id = seq_id_match.group(1)
-            else:
-                seq_id = "unknown_id"
-            
-            # Add to tracking lists
-            true_labels.append('algal')
-            sequence_ids.append(seq_id)
-            
-            # Determine predicted label based on tags
-            if re.search(r'<@+>', line):
-                predicted_labels.append('algal')
-            elif re.search(r'<!+>', line):
-                predicted_labels.append('bacterial')
-            else:
-                predicted_labels.append('unknown')
+    # Track current section type
+    current_section_type = None
     
-    # Process bacterial file (all true labels are 'bacterial')
-    with open(bacterial_file, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
+    for i, section in enumerate(sections):
+        if i == 0:  # Skip initial empty section if present
+            continue
             
-            # Skip header or non-data lines
-            if line.startswith('==>') or line.startswith('(') or not re.search(r'\.|_', line):
-                continue
+        # Check if this is a section header
+        if 'Algal-example' in section:
+            current_section_type = 'algal'
+            continue
+        elif 'Bacterial-example' in section:
+            current_section_type = 'bacterial'
+            continue
+            
+        # Process lines in the section
+        if current_section_type:
+            lines = section.strip().split('\n')
+            for line in lines:
+                if not line.strip():
+                    continue
+                    
+                # Extract sequence ID
+                seq_id_match = re.match(r'^([^>]+?)\s', line)
+                if seq_id_match:
+                    seq_id = seq_id_match.group(1)
+                else:
+                    seq_id = "unknown_id"
                 
-            # Extract sequence ID
-            seq_id_match = re.match(r'^([^\s]+)', line)
-            if seq_id_match:
-                seq_id = seq_id_match.group(1)
-            else:
-                seq_id = "unknown_id"
-            
-            # Add to tracking lists
-            true_labels.append('bacterial')
-            sequence_ids.append(seq_id)
-            
-            # Determine predicted label based on tags
-            if re.search(r'<@+>', line):
-                predicted_labels.append('algal')
-            elif re.search(r'<!+>', line):
-                predicted_labels.append('bacterial')
-            else:
-                predicted_labels.append('unknown')
+                # Add true label based on section
+                true_labels.append(current_section_type)
+                sequence_ids.append(seq_id)
+                
+                # Check for predicted tag
+                if re.search(r'<@+>', line):
+                    predicted_labels.append('algal')
+                elif re.search(r'<!+>', line):
+                    predicted_labels.append('bacterial')
+                else:
+                    predicted_labels.append('unknown')
     
     return true_labels, predicted_labels, sequence_ids
 
@@ -150,7 +135,7 @@ def calculate_metrics(true_labels, predicted_labels):
             output_dict=True
         )
     else:
-        precision = recall = f1 = support = [0, 0]
+        precision = recall = f1 = support = [[0, 0]]
         cm = np.zeros((2, 2))
         report = {}
     
@@ -195,10 +180,7 @@ def calculate_metrics(true_labels, predicted_labels):
         "support": {classes[i]: support[i] for i in range(len(classes))},
         "classification_report": report,
         "macro_f1": np.mean(f1),
-        "weighted_f1": np.sum(f1 * support) / np.sum(support) if np.sum(support) > 0 else 0,
-        "total_samples": len(true_labels),
-        "total_correct": sum(t == p for t, p in zip(true_labels, predicted_labels)),
-        "total_unknown": predicted_labels.count("unknown")
+        "weighted_f1": np.sum(f1 * support) / np.sum(support) if np.sum(support) > 0 else 0
     }
     
     return metrics
@@ -225,10 +207,7 @@ def display_results(metrics, output_file=None):
     
     # Overall metrics
     print("\n=== OVERALL METRICS ===")
-    print(f"Total samples: {metrics['total_samples']}")
-    print(f"Correctly classified: {metrics['total_correct']} ({metrics['total_correct']/metrics['total_samples']*100:.2f}%)")
-    print(f"Unknown predictions: {metrics['total_unknown']} ({metrics['total_unknown']/metrics['total_samples']*100:.2f}%)")
-    print(f"Overall accuracy: {metrics['accuracy']:.4f}")
+    print(f"Accuracy: {metrics['accuracy']:.4f}")
     print(f"Macro F1: {metrics['macro_f1']:.4f}")
     print(f"Weighted F1: {metrics['weighted_f1']:.4f}")
     
@@ -275,12 +254,14 @@ def display_results(metrics, output_file=None):
         
         print(f"Results saved to {output_file}")
 
-def generate_visualizations(metrics, output_prefix=None):
+def generate_visualizations(metrics, true_labels, predicted_labels, output_prefix=None):
     """
     Generate visualizations of the metrics
     
     Arguments:
         metrics (dict): Dictionary containing all calculated metrics
+        true_labels (list): List of true class labels
+        predicted_labels (list): List of predicted class labels
         output_prefix (str, optional): Prefix for output image files
     """
     # Create confusion matrix heatmap
@@ -309,8 +290,6 @@ def generate_visualizations(metrics, output_prefix=None):
     
     if output_prefix:
         plt.savefig(f"{output_prefix}_confusion_matrix.png", dpi=300, bbox_inches='tight')
-    else:
-        plt.show()
     
     # Create per-class metrics bar chart
     plt.figure(figsize=(10, 6))
@@ -334,111 +313,19 @@ def generate_visualizations(metrics, output_prefix=None):
     
     if output_prefix:
         plt.savefig(f"{output_prefix}_metrics_by_class.png", dpi=300, bbox_inches='tight')
-    else:
-        plt.show()
-    
-    # Create class distribution pie charts
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-    
-    # Algal class distribution
-    algal_data = metrics['class_metrics']['algal']
-    algal_labels = ['Correct', 'Incorrect', 'Unknown']
-    algal_values = [algal_data['correct'], algal_data['incorrect'], algal_data['unknown']]
-    ax1.pie(algal_values, labels=algal_labels, autopct='%1.1f%%', startangle=90)
-    ax1.set_title('Algal Class Predictions')
-    
-    # Bacterial class distribution
-    bacterial_data = metrics['class_metrics']['bacterial']
-    bacterial_labels = ['Correct', 'Incorrect', 'Unknown']
-    bacterial_values = [bacterial_data['correct'], bacterial_data['incorrect'], bacterial_data['unknown']]
-    ax2.pie(bacterial_values, labels=bacterial_labels, autopct='%1.1f%%', startangle=90)
-    ax2.set_title('Bacterial Class Predictions')
-    
-    plt.tight_layout()
-    
-    if output_prefix:
-        plt.savefig(f"{output_prefix}_class_distribution.png", dpi=300, bbox_inches='tight')
-    else:
-        plt.show()
-
-def create_misclassified_report(true_labels, predicted_labels, sequence_ids, output_file=None):
-    """
-    Create a report of misclassified sequences
-    
-    Arguments:
-        true_labels (list): List of true class labels
-        predicted_labels (list): List of predicted class labels
-        sequence_ids (list): List of sequence IDs
-        output_file (str, optional): Path to save the report to
-    """
-    misclassified = []
-    for i, (true, pred, seq_id) in enumerate(zip(true_labels, predicted_labels, sequence_ids)):
-        if true != pred:
-            misclassified.append({
-                'id': seq_id,
-                'true': true,
-                'predicted': pred
-            })
-    
-    # Start capturing output
-    if output_file:
-        import io
-        output_capture = io.StringIO()
-        original_stdout = sys.stdout
-        sys.stdout = output_capture
-    
-    # Print header
-    print("\n" + "="*60)
-    print("          MISCLASSIFIED SEQUENCES REPORT")
-    print("="*60)
-    print(f"\nTotal misclassified: {len(misclassified)} out of {len(true_labels)} ({len(misclassified)/len(true_labels)*100:.2f}%)\n")
-    
-    # Print algal sequences misclassified as bacterial
-    print("\n--- ALGAL SEQUENCES MISCLASSIFIED AS BACTERIAL ---")
-    algal_as_bacterial = [m for m in misclassified if m['true'] == 'algal' and m['predicted'] == 'bacterial']
-    for item in algal_as_bacterial:
-        print(f"ID: {item['id']}")
-    print(f"Total: {len(algal_as_bacterial)}")
-    
-    # Print bacterial sequences misclassified as algal
-    print("\n--- BACTERIAL SEQUENCES MISCLASSIFIED AS ALGAL ---")
-    bacterial_as_algal = [m for m in misclassified if m['true'] == 'bacterial' and m['predicted'] == 'algal']
-    for item in bacterial_as_algal:
-        print(f"ID: {item['id']}")
-    print(f"Total: {len(bacterial_as_algal)}")
-    
-    # Print unknown classifications
-    print("\n--- SEQUENCES WITH UNKNOWN CLASSIFICATION ---")
-    unknown = [m for m in misclassified if m['predicted'] == 'unknown']
-    for item in unknown:
-        print(f"ID: {item['id']} (True: {item['true']})")
-    print(f"Total: {len(unknown)}")
-    
-    # If saving to file
-    if output_file:
-        # Restore stdout
-        sys.stdout = original_stdout
-        
-        # Write to file
-        with open(output_file, 'w') as f:
-            f.write(output_capture.getvalue())
-        
-        print(f"Misclassified report saved to {output_file}")
 
 def main():
     """Main function to run the script"""
-    parser = argparse.ArgumentParser(description='LLM Classification Metrics Generator for Two-File Analysis')
-    parser.add_argument('algal_file', help='Path to the file containing algal sequences')
-    parser.add_argument('bacterial_file', help='Path to the file containing bacterial sequences')
+    parser = argparse.ArgumentParser(description='LLM Classification Metrics Generator')
+    parser.add_argument('file', help='Path to the file containing LLM inference results')
     parser.add_argument('-o', '--output', help='Path to save the metrics report')
-    parser.add_argument('-m', '--misclassified', help='Path to save the misclassified sequences report')
     parser.add_argument('-v', '--visualize', action='store_true', help='Generate visualizations')
     parser.add_argument('-p', '--prefix', default='llm_metrics', help='Prefix for output files')
     
     args = parser.parse_args()
     
-    # Parse files and calculate metrics
-    true_labels, predicted_labels, sequence_ids = parse_files(args.algal_file, args.bacterial_file)
+    # Parse file and calculate metrics
+    true_labels, predicted_labels, sequence_ids = parse_file(args.file)
     metrics = calculate_metrics(true_labels, predicted_labels)
     
     # Display results
@@ -447,12 +334,7 @@ def main():
     
     # Generate visualizations if requested
     if args.visualize:
-        generate_visualizations(metrics, args.prefix)
-    
-    # Create misclassified report if requested
-    if args.misclassified:
-        misclassified_file = f"{args.prefix}_misclassified.txt" if args.misclassified is True else args.misclassified
-        create_misclassified_report(true_labels, predicted_labels, sequence_ids, misclassified_file)
+        generate_visualizations(metrics, true_labels, predicted_labels, args.prefix)
     
     # Return number of misclassifications (for automated testing)
     misclassifications = sum(t != p for t, p in zip(true_labels, predicted_labels))
