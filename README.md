@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="LA4SR banner" width="100%">
+</p>
+
 # LA^SR: Language modeling with AI for Algal Amino Acid Sequence Representation 🧬
 
 🔬 Illuminating the
